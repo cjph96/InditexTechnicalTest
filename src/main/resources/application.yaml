@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:inditexdb
+    username: ${DATABASE_USERNAME:sa}
+    password: ${DATABASE_PASSWORD:password}
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+  h2:
+    console:
+      enabled: ${H2_CONSOLE:true}
+      settings:
+        web-allow-others: ${H2_CONSOLE:true}

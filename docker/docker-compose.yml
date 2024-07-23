@@ -10,6 +10,10 @@ services:
     volumes:
       - ../:/app
     command: [ "./gradlew", "clean", "build", "bootRun" ]
+    environment:
+      - DATABASE_H2_USERNAME=sa
+      - DATABASE_H2_PASSWORD=password
+      - H2_CONSOLE=true
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health-check" ]
       interval: 1m
