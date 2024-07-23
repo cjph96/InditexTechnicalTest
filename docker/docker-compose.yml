@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  java:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../:/app
+    command: [ "./gradlew", "clean", "build", "bootRun" ]
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health-check" ]
+      interval: 1m
+      timeout: 10s
+      retries: 3
