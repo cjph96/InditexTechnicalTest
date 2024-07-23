@@ -19,3 +19,14 @@ services:
       interval: 1m
       timeout: 10s
       retries: 3
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui:v5.17.14
+    ports:
+      - "777:8080"
+    volumes:
+      - ../docs:/usr/share/nginx/html/docs
+    environment:
+      URLS: "[
+              { url: 'docs/price-list.yaml', name: 'Price List'},
+            ]"

@@ -1,0 +1,73 @@
+openapi: 3.1.0
+info:
+  description: PriceList API documentation
+  version: '1.0'
+  title: Deliverea API
+
+servers:
+  - url: http://localhost:8080
+    description: Local environment
+
+paths:
+  /v1/price-list/search:
+    get:
+      parameters:
+        - in: query
+          name: startDate
+          description: From date to filter
+          required: true
+          schema:
+            $ref: 'components.yaml#/components/schemas/Date'
+        - in: query
+          name: productId
+          description: Product ID
+          required: true
+          schema:
+            type: integer
+            example: 35455
+        - in: query
+          name: brandId
+          description: Brand ID
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        200:
+          $ref: '#/components/responses/SearchPriceListResponse'
+        400:
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                $ref: 'components.yaml#/components/schemas/ErrorResponse'
+                example: "Missing some required parameter('startDate','productId', brandId."
+        404:
+          description: There are not a Price List which match arguments
+
+components:
+  responses:
+    SearchPriceListResponse:
+      description: PriceList found (returns the one with the biggest priority, in case of same priority returns the oldest)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              productId:
+                type: integer
+                example: 35455
+              brandId:
+                type: integer
+                example: 1
+              id:
+                type: integer
+                example: 2
+              startDate:
+                $ref: 'components.yaml#/components/schemas/Date'
+              endDate:
+                $ref: 'components.yaml#/components/schemas/Date'
+                example: "2020-06-14T18:30:00"
+              price:
+                type: String
+                example: "25.45 €"
