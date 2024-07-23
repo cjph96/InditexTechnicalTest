@@ -4,12 +4,18 @@ import com.inditex.technicaltest.TechnicalTestApplicationTestCase;
 import com.inditex.technicaltest.pricelist.datafactory.domain.PriceListDataFactory;
 import com.inditex.technicaltest.pricelist.domain.*;
 import com.inditex.technicaltest.pricelist.infrastructure.persistence.PriceListJakartaRepository;
+import com.inditex.technicaltest.shared.domain.criteria.Criteria;
+import com.inditex.technicaltest.shared.domain.criteria.Filters;
+import com.inditex.technicaltest.shared.domain.criteria.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,5 +50,40 @@ public class PriceListJakartaRepositoryTest extends TechnicalTestApplicationTest
         );
         sut.save(priceList);
         assertEquals(priceList, sut.find(priceList.getId()));
+    }
+
+    @Test
+    public void shouldSearchPriceListAndReturnAllOnEmptyCriteria() {
+        assertEquals(PriceListDataFactory.data(), sut.search(new Criteria(Filters.none(), Order.none())));
+    }
+
+    @Test
+    public void shouldSearchPriceListAndReturnFilteredByCriteria() {
+        List<HashMap<String, String>> filters = new ArrayList<>() {{
+            add(
+                    new HashMap<>() {{
+                        put("field", "startDate");
+                        put("operator", ">");
+                        put("value", "2020-06-14T00:00:00");
+                    }}
+            );
+            add(
+                    new HashMap<>() {{
+                        put("field", "endDate");
+                        put("operator", "<");
+                        put("value", "2020-12-31T23:59:59");
+                    }}
+            );
+        }};
+
+        Criteria criteria = new Criteria(
+                Filters.fromValues(filters),
+                Order.fromValues("price", "DESC")
+        );
+        List<PriceList> expectedPriceLists = new ArrayList<>(PriceListDataFactory.data());
+        expectedPriceLists.remove(3);
+        expectedPriceLists.remove(0);
+
+        assertEquals(expectedPriceLists.reversed(), sut.search(criteria));
     }
 }
